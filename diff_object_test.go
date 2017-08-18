@@ -15,3 +15,14 @@ func (s *DiffObjectSuite) TestEmpty(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
+
+func (s *DiffObjectSuite) TestObjectToZero(c *C) {
+	left := map[string]interface{}{}
+	right := 0
+	expected := []interface{}{
+		[]interface{}{[]interface{}{}, 0},
+	}
+	obtained, err := diff(left, right)
+	c.Assert(err, IsNil)
+	c.Assert(obtained, DeepEquals, expected)
+}
