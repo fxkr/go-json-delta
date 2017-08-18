@@ -15,3 +15,14 @@ func (s *DiffNullSuite) TestNull(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
+
+func (s *DiffFloatSuite) TestNullTo1(c *C) {
+	var left interface{} = nil
+	right := 1
+	expected := []interface{}{
+		[]interface{}{[]interface{}{}, 1},
+	}
+	obtained, err := diff(left, right)
+	c.Assert(err, IsNil)
+	c.Assert(obtained, DeepEquals, expected)
+}
