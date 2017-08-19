@@ -62,6 +62,15 @@ func diff(leftStruct interface{}, rightStruct interface{}) (interface{}, error) 
 
 		results := []interface{}{}
 
+		// Find removed keys
+		for mapKey, _ := range leftVal {
+			_, found := rightVal[mapKey]
+			if !found {
+				results = append(results, []interface{}{[]interface{}{mapKey}})
+				continue
+			}
+		}
+
 		// Find added keys
 		for mapKey, rightMapVal := range rightVal {
 			_, found := leftVal[mapKey]
