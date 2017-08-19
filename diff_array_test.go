@@ -11,7 +11,7 @@ func (s *DiffArraySuite) TestEmpty(c *C) {
 	left := []interface{}{}
 	right := []interface{}{}
 	expected := []interface{}{}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -20,7 +20,7 @@ func (s *DiffArraySuite) TestNested(c *C) {
 	left := []interface{}{[]interface{}{}}
 	right := []interface{}{[]interface{}{}}
 	expected := []interface{}{}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -29,7 +29,7 @@ func (s *DiffArraySuite) TestNestedTwice(c *C) {
 	left := []interface{}{[]interface{}{[]interface{}{}}}
 	right := []interface{}{[]interface{}{[]interface{}{}}}
 	expected := []interface{}{}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -40,7 +40,7 @@ func (s *DiffObjectSuite) TestArrayToZero(c *C) {
 	expected := []interface{}{
 		[]interface{}{[]interface{}{}, 0},
 	}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -51,7 +51,7 @@ func (s *DiffObjectSuite) TestArrayAddItem(c *C) {
 	expected := []interface{}{
 		[]interface{}{[]interface{}{0}, 1},
 	}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -62,7 +62,7 @@ func (s *DiffObjectSuite) TestArrayRemoveItem(c *C) {
 	expected := []interface{}{
 		[]interface{}{[]interface{}{0}},
 	}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -73,7 +73,7 @@ func (s *DiffObjectSuite) TestArrayUpdateItem(c *C) {
 	expected := []interface{}{
 		[]interface{}{[]interface{}{0}, 2},
 	}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }

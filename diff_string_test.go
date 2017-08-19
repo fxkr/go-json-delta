@@ -11,7 +11,7 @@ func (s *DiffStringSuite) TestEmpty(c *C) {
 	left := ""
 	right := ""
 	expected := []interface{}{}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -20,7 +20,7 @@ func (s *DiffStringSuite) TestNotEmpty(c *C) {
 	left := "test"
 	right := "test"
 	expected := []interface{}{}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -31,7 +31,7 @@ func (s *DiffStringSuite) TestEmptyToNotEmpty(c *C) {
 	expected := []interface{}{
 		[]interface{}{[]interface{}{}, "test"},
 	}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -42,7 +42,7 @@ func (s *DiffStringSuite) TestNotEmptyToEmpty(c *C) {
 	expected := []interface{}{
 		[]interface{}{[]interface{}{}, ""},
 	}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -53,7 +53,7 @@ func (s *DiffStringSuite) TestChange(c *C) {
 	expected := []interface{}{
 		[]interface{}{[]interface{}{}, "bar"},
 	}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -64,7 +64,7 @@ func (s *DiffFloatSuite) TestStringToNil(c *C) {
 	expected := []interface{}{
 		[]interface{}{[]interface{}{}, nil},
 	}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }

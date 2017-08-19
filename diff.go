@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error) {
+func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error) {
 	switch leftVal := leftStruct.(type) {
 
 	case bool:
@@ -69,7 +69,7 @@ func diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 
 			// Compare items at same position
 			leftListVal := leftVal[i];
-			subResults, err := diff(leftListVal, rightListVal)
+			subResults, err := Diff(leftListVal, rightListVal)
 			if err != nil {
 				return nil, errors.Wrap(err, fmt.Sprint("Error handling array item %d", i))
 			}
@@ -83,19 +83,19 @@ func diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 			for _, subResult := range subResults {
 				subResult, ok := subResult.([]interface{})
 				if !ok {
-					panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V in diff between %v and %v",
+					panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V in Diff between %v and %v",
 						subResult, subResult, leftListVal, rightListVal))
 				}
 
 				if len(subResult) == 0 {
-					panic(fmt.Sprintf("Bug: unexpected empty subresult in diff between %v and %v",
+					panic(fmt.Sprintf("Bug: unexpected empty subresult in Diff between %v and %v",
 						leftListVal, rightListVal))
 				}
 				subResultHead := subResult[0]
 
 				subResultKey, ok := subResultHead.([]interface{})
 				if !ok {
-					panic(fmt.Sprintf("Bug: unexpected subresult key %v of type %V in diff between %v and %v",
+					panic(fmt.Sprintf("Bug: unexpected subresult key %v of type %V in Diff between %v and %v",
 						subResultHead, subResultHead, leftListVal, rightListVal))
 				}
 
@@ -146,7 +146,7 @@ func diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 			}
 
 			// Recursive call
-			subResults, err := diff(leftMapVal, rightMapVal)
+			subResults, err := Diff(leftMapVal, rightMapVal)
 			if err != nil {
 				return nil, errors.Wrap(err, fmt.Sprint("Error handling updated dict key %v", mapKey))
 			}
@@ -155,19 +155,19 @@ func diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 			for _, subResult := range subResults {
 				subResult, ok := subResult.([]interface{})
 				if !ok {
-					panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V in diff between %v and %v",
+					panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V in Diff between %v and %v",
 						subResult, subResult, leftMapVal, rightMapVal))
 				}
 
 				if len(subResult) == 0 {
-					panic(fmt.Sprintf("Bug: unexpected empty subresult in diff between %v and %v",
+					panic(fmt.Sprintf("Bug: unexpected empty subresult in Diff between %v and %v",
 						leftMapVal, rightMapVal))
 				}
 				subResultHead := subResult[0]
 
 				subResultKey, ok := subResultHead.([]interface{})
 				if !ok {
-					panic(fmt.Sprintf("Bug: unexpected subresult key %v of type %V in diff between %v and %v",
+					panic(fmt.Sprintf("Bug: unexpected subresult key %v of type %V in Diff between %v and %v",
 						subResultHead, subResultHead, leftMapVal, rightMapVal))
 				}
 

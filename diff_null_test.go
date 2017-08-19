@@ -11,7 +11,7 @@ func (s *DiffNullSuite) TestNull(c *C) {
 	var left interface{} = nil
 	var right interface{} = nil
 	expected := []interface{}{}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
@@ -22,7 +22,7 @@ func (s *DiffFloatSuite) TestNullTo1(c *C) {
 	expected := []interface{}{
 		[]interface{}{[]interface{}{}, 1},
 	}
-	obtained, err := diff(left, right)
+	obtained, err := Diff(left, right)
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
