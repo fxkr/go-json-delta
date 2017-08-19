@@ -44,3 +44,36 @@ func (s *DiffObjectSuite) TestArrayToZero(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
+
+func (s *DiffObjectSuite) TestArrayAddItem(c *C) {
+	left := []interface{}{}
+	right := []interface{}{1}
+	expected := []interface{}{
+		[]interface{}{[]interface{}{0}, 1},
+	}
+	obtained, err := diff(left, right)
+	c.Assert(err, IsNil)
+	c.Assert(obtained, DeepEquals, expected)
+}
+
+func (s *DiffObjectSuite) TestArrayRemoveItem(c *C) {
+	left := []interface{}{1}
+	right := []interface{}{}
+	expected := []interface{}{
+		[]interface{}{[]interface{}{0}},
+	}
+	obtained, err := diff(left, right)
+	c.Assert(err, IsNil)
+	c.Assert(obtained, DeepEquals, expected)
+}
+
+func (s *DiffObjectSuite) TestArrayUpdateItem(c *C) {
+	left := []interface{}{1}
+	right := []interface{}{2}
+	expected := []interface{}{
+		[]interface{}{[]interface{}{0}, 2},
+	}
+	obtained, err := diff(left, right)
+	c.Assert(err, IsNil)
+	c.Assert(obtained, DeepEquals, expected)
+}

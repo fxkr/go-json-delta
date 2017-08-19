@@ -49,10 +49,68 @@ func diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 			return []interface{}{[]interface{}{[]interface{}{}, rightStruct}}, nil
 		}
 
-		// TODO
-		_ = rightVal
+		results := []interface{}{}
 
-		return []interface{}{}, nil
+		// Update items
+		for i := 0; i < len(leftVal) || i < len(rightVal); i++ {
+
+			// For any extra items on the right, make 'remove' stanzas
+			if i >= len(rightVal) {
+				results = append(results, []interface{}{[]interface{}{i}})
+				continue
+			}
+
+			// For any extra items on the left, make 'add' stanzas
+			rightListVal := rightVal[i]
+			if i >= len(leftVal) {
+				results = append(results, []interface{}{[]interface{}{i}, rightListVal})
+				continue
+			}
+
+			// Compare items at same position
+			leftListVal := leftVal[i];
+			subResults, err := diff(leftListVal, rightListVal)
+			if err != nil {
+				return nil, errors.Wrap(err, fmt.Sprint("Error handling array item %d", i))
+			}
+
+			// For equal items at same position, do nothing
+			if len(subResults) == 0 {
+				continue
+			}
+
+			// For non-equal items, prefix their diffs stanzas with the array index and add them to the result
+			for _, subResult := range subResults {
+				subResult, ok := subResult.([]interface{})
+				if !ok {
+					panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V in diff between %v and %v",
+						subResult, subResult, leftListVal, rightListVal))
+				}
+
+				if len(subResult) == 0 {
+					panic(fmt.Sprintf("Bug: unexpected empty subresult in diff between %v and %v",
+						leftListVal, rightListVal))
+				}
+				subResultHead := subResult[0]
+
+				subResultKey, ok := subResultHead.([]interface{})
+				if !ok {
+					panic(fmt.Sprintf("Bug: unexpected subresult key %v of type %V in diff between %v and %v",
+						subResultHead, subResultHead, leftListVal, rightListVal))
+				}
+
+				subResultTail := subResult[1:]
+
+				newSubResult := append(
+					[]interface{}{append([]interface{}{i}, subResultKey...)},
+					subResultTail...,
+				)
+
+				results = append(results, newSubResult)
+			}
+		}
+
+		return results, nil
 
 	case map[string]interface{}:
 		rightVal, ok := rightStruct.(map[string]interface{})
