@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func diff(leftStruct interface{}, rightStruct interface{}) (interface{}, error) {
+func diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error) {
 	switch leftVal := leftStruct.(type) {
 
 	case bool:
