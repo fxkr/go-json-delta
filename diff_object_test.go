@@ -49,3 +49,36 @@ func (s *DiffObjectSuite) TestObjectRemovedKey(c *C) {
 	c.Assert(err, IsNil)
 	c.Assert(obtained, DeepEquals, expected)
 }
+
+func (s *DiffObjectSuite) TestObjectChangedValue(c *C) {
+	left := map[string]interface{}{"key1": "value1"}
+	right := map[string]interface{}{"key1": "value2"}
+	expected := []interface{}{
+		[]interface{}{[]interface{}{"key1"}, "value2"},
+	}
+	obtained, err := diff(left, right)
+	c.Assert(err, IsNil)
+	c.Assert(obtained, DeepEquals, expected)
+}
+
+func (s *DiffObjectSuite) TestObjectObjectObjectValueChanged(c *C) {
+	left := map[string]interface{}{"key1": map[string]interface{}{"key2": map[string]interface{}{"key3": "value1"}}}
+	right := map[string]interface{}{"key1": map[string]interface{}{"key2": map[string]interface{}{"key3": "value2"}}}
+	expected := []interface{}{
+		[]interface{}{[]interface{}{"key1", "key2", "key3"}, "value2"},
+	}
+	obtained, err := diff(left, right)
+	c.Assert(err, IsNil)
+	c.Assert(obtained, DeepEquals, expected)
+}
+
+func (s *DiffObjectSuite) TestObjectObjectObjectValueDeleted(c *C) {
+	left := map[string]interface{}{"key1": map[string]interface{}{"key2": map[string]interface{}{"key3": "value1"}}}
+	right := map[string]interface{}{"key1": map[string]interface{}{"key2": map[string]interface{}{}}}
+	expected := []interface{}{
+		[]interface{}{[]interface{}{"key1", "key2", "key3"}},
+	}
+	obtained, err := diff(left, right)
+	c.Assert(err, IsNil)
+	c.Assert(obtained, DeepEquals, expected)
+}

@@ -80,7 +80,49 @@ func diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 			}
 		}
 
-		// TODO
+		// Find updated keys
+		for mapKey, leftMapVal := range leftVal {
+			rightMapVal, found := rightVal[mapKey]
+			if !found {
+				continue // Added keys already handled above
+			}
+
+			// Recursive call
+			subResults, err := diff(leftMapVal, rightMapVal)
+			if err != nil {
+				return nil, errors.Wrap(err, fmt.Sprint("Error handling updated dict key %v", mapKey))
+			}
+
+			// Prefix sub-result keys with map key and add so modified sub-results to result
+			for _, subResult := range subResults {
+				subResult, ok := subResult.([]interface{})
+				if !ok {
+					panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V in diff between %v and %v",
+						subResult, subResult, leftMapVal, rightMapVal))
+				}
+
+				if len(subResult) == 0 {
+					panic(fmt.Sprintf("Bug: unexpected empty subresult in diff between %v and %v",
+						leftMapVal, rightMapVal))
+				}
+				subResultHead := subResult[0]
+
+				subResultKey, ok := subResultHead.([]interface{})
+				if !ok {
+					panic(fmt.Sprintf("Bug: unexpected subresult key %v of type %V in diff between %v and %v",
+						subResultHead, subResultHead, leftMapVal, rightMapVal))
+				}
+
+				subResultTail := subResult[1:]
+
+				newSubResult := append(
+					[]interface{}{append([]interface{}{mapKey}, subResultKey...)},
+					subResultTail...,
+				)
+
+				results = append(results, newSubResult)
+			}
+		}
 
 		return results, nil
 
