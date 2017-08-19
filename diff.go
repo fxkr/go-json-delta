@@ -60,10 +60,20 @@ func diff(leftStruct interface{}, rightStruct interface{}) (interface{}, error) 
 			return []interface{}{[]interface{}{[]interface{}{}, rightStruct}}, nil
 		}
 
-		// TODO
-		_ = rightVal
+		results := []interface{}{}
 
-		return []interface{}{}, nil
+		// Find added keys
+		for mapKey, rightMapVal := range rightVal {
+			_, found := leftVal[mapKey]
+			if !found {
+				results = append(results, []interface{}{[]interface{}{mapKey}, rightMapVal})
+				continue
+			}
+		}
+
+		// TODO
+
+		return results, nil
 
 	default:
 		return nil, errors.New(fmt.Sprintf("Bad type on left side: %T", leftStruct))
