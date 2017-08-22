@@ -80,17 +80,7 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 			}
 
 			// For non-equal items, prefix their diffs stanzas with the array index and add them to the result
-			for _, subResult := range subResults {
-				subResult, ok := subResult.([]interface{})
-				if !ok {
-					panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V in Diff between %v and %v",
-						subResult, subResult, leftListVal, rightListVal))
-				}
-
-				newSubResult := prependIndexToStanza(i, subResult)
-
-				results = append(results, newSubResult)
-			}
+			results = appendWithPrefixIndex(results, i, subResults)
 		}
 
 		return results, nil
@@ -135,17 +125,7 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 			}
 
 			// Prefix sub-result keys with map key and add so modified sub-results to result
-			for _, subResult := range subResults {
-				subResult, ok := subResult.([]interface{})
-				if !ok {
-					panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V in Diff between %v and %v",
-						subResult, subResult, leftMapVal, rightMapVal))
-				}
-
-				newSubResult := prependKeyToStanza(mapKey, subResult)
-
-				results = append(results, newSubResult)
-			}
+			results = appendWithPrefixKey(results, mapKey, subResults)
 		}
 
 		return results, nil
@@ -154,6 +134,35 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 		return nil, errors.New(fmt.Sprintf("Bad type on left side: %T", leftStruct))
 	}
 }
+
+func appendWithPrefixIndex(results []interface{}, index int, subResults []interface{}) []interface{} {
+	for _, subResult := range subResults {
+		subResult, ok := subResult.([]interface{})
+		if !ok {
+			panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V", subResult, subResult))
+		}
+
+		newSubResult := prependIndexToStanza(index, subResult)
+
+		results = append(results, newSubResult)
+	}
+	return results
+}
+
+func appendWithPrefixKey(results []interface{}, mapKey string, subResults []interface{}) []interface{} {
+	for _, subResult := range subResults {
+		subResult, ok := subResult.([]interface{})
+		if !ok {
+			panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V", subResult, subResult))
+		}
+
+		newSubResult := prependKeyToStanza(mapKey, subResult)
+
+		results = append(results, newSubResult)
+	}
+	return results
+}
+
 func prependKeyToStanza(mapKey string, subResult []interface{}) []interface{} {
 	if len(subResult) == 0 {
 		panic("Bug: unexpected empty subresult in Diff between %v and %v")
