@@ -87,24 +87,7 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 						subResult, subResult, leftListVal, rightListVal))
 				}
 
-				if len(subResult) == 0 {
-					panic(fmt.Sprintf("Bug: unexpected empty subresult in Diff between %v and %v",
-						leftListVal, rightListVal))
-				}
-				subResultHead := subResult[0]
-
-				subResultKey, ok := subResultHead.([]interface{})
-				if !ok {
-					panic(fmt.Sprintf("Bug: unexpected subresult key %v of type %V in Diff between %v and %v",
-						subResultHead, subResultHead, leftListVal, rightListVal))
-				}
-
-				subResultTail := subResult[1:]
-
-				newSubResult := append(
-					[]interface{}{append([]interface{}{i}, subResultKey...)},
-					subResultTail...,
-				)
+				newSubResult := prependIndexToStanza(i, subResult)
 
 				results = append(results, newSubResult)
 			}
@@ -159,24 +142,7 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 						subResult, subResult, leftMapVal, rightMapVal))
 				}
 
-				if len(subResult) == 0 {
-					panic(fmt.Sprintf("Bug: unexpected empty subresult in Diff between %v and %v",
-						leftMapVal, rightMapVal))
-				}
-				subResultHead := subResult[0]
-
-				subResultKey, ok := subResultHead.([]interface{})
-				if !ok {
-					panic(fmt.Sprintf("Bug: unexpected subresult key %v of type %V in Diff between %v and %v",
-						subResultHead, subResultHead, leftMapVal, rightMapVal))
-				}
-
-				subResultTail := subResult[1:]
-
-				newSubResult := append(
-					[]interface{}{append([]interface{}{mapKey}, subResultKey...)},
-					subResultTail...,
-				)
+				newSubResult := prependKeyToStanza(mapKey, subResult)
 
 				results = append(results, newSubResult)
 			}
@@ -187,6 +153,47 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 	default:
 		return nil, errors.New(fmt.Sprintf("Bad type on left side: %T", leftStruct))
 	}
+}
+func prependKeyToStanza(mapKey string, subResult []interface{}) []interface{} {
+	if len(subResult) == 0 {
+		panic("Bug: unexpected empty subresult in Diff between %v and %v")
+	}
+
+	subResultHead := subResult[0]
+	subResultKey, ok := subResultHead.([]interface{})
+	if !ok {
+		panic("Bug: unexpected subresult key %v of type %V in Diff between %v and %v")
+	}
+
+	subResultTail := subResult[1:]
+
+	newSubResult := append(
+		[]interface{}{append([]interface{}{mapKey}, subResultKey...)},
+		subResultTail...,
+	)
+
+	return newSubResult
+}
+
+func prependIndexToStanza(i int, subResult []interface{}) []interface{} {
+	if len(subResult) == 0 {
+		panic("Bug: unexpected empty subresult")
+	}
+
+	subResultHead := subResult[0]
+	subResultKey, ok := subResultHead.([]interface{})
+	if !ok {
+		panic("Bug: unexpected subresult key %v of type %V in Diff between %v and %v")
+	}
+
+	subResultTail := subResult[1:]
+
+	newSubResult := append(
+		[]interface{}{append([]interface{}{i}, subResultKey...)},
+		subResultTail...,
+	)
+
+	return newSubResult
 }
 
 func newDiff(stanzas ...interface{}) []interface{} {
