@@ -12,58 +12,58 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 	case bool:
 		rightVal, ok := rightStruct.(bool)
 		if !ok || leftVal != rightVal {
-			return []interface{}{[]interface{}{[]interface{}{}, rightStruct}}, nil
+			return newDiff(newUpdateStanza(rightStruct)), nil
 		}
-		return []interface{}{}, nil
+		return newDiff(), nil
 
 	case float64:
 		rightVal, ok := rightStruct.(float64)
 		if !ok || leftVal != rightVal {
-			return []interface{}{[]interface{}{[]interface{}{}, rightStruct}}, nil
+			return newDiff(newUpdateStanza(rightStruct)), nil
 		}
-		return []interface{}{}, nil
+		return newEmptyDiff(), nil
 
 	case int:
 		rightVal, ok := rightStruct.(int)
 		if !ok || leftVal != rightVal {
-			return []interface{}{[]interface{}{[]interface{}{}, rightStruct}}, nil
+			return newDiff(newUpdateStanza(rightStruct)), nil
 		}
-		return []interface{}{}, nil
+		return newEmptyDiff(), nil
 
 	case nil:
 		if leftVal != rightStruct {
-			return []interface{}{[]interface{}{[]interface{}{}, rightStruct}}, nil
+			return newDiff(newUpdateStanza(rightStruct)), nil
 		}
-		return []interface{}{}, nil
+		return newEmptyDiff(), nil
 
 	case string:
 		rightVal, ok := rightStruct.(string)
 		if !ok || leftVal != rightVal {
-			return []interface{}{[]interface{}{[]interface{}{}, rightStruct}}, nil
+			return newDiff(newUpdateStanza(rightStruct)), nil
 		}
-		return []interface{}{}, nil
+		return newEmptyDiff(), nil
 
 	case []interface{}:
 		rightVal, ok := rightStruct.([]interface{})
 		if !ok {
-			return []interface{}{[]interface{}{[]interface{}{}, rightStruct}}, nil
+			return newDiff(newUpdateStanza(rightStruct)), nil
 		}
 
-		results := []interface{}{}
+		results := newEmptyDiff()
 
 		// Update items
 		for i := 0; i < len(leftVal) || i < len(rightVal); i++ {
 
 			// For any extra items on the left, make 'remove' stanzas
 			if i >= len(rightVal) {
-				results = append(results, []interface{}{[]interface{}{i}})
+				results = append(results, newArrayRemoveStanza(i))
 				continue
 			}
 
 			// For any extra items on the right, make 'add' stanzas
 			rightListVal := rightVal[i]
 			if i >= len(leftVal) {
-				results = append(results, []interface{}{[]interface{}{i}, rightListVal})
+				results = append(results, newArrayAddStanza(i, rightListVal))
 				continue
 			}
 
@@ -115,10 +115,10 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 	case map[string]interface{}:
 		rightVal, ok := rightStruct.(map[string]interface{})
 		if !ok {
-			return []interface{}{[]interface{}{[]interface{}{}, rightStruct}}, nil
+			return newDiff(newUpdateStanza(rightStruct)), nil
 		}
 
-		results := []interface{}{}
+		results := newEmptyDiff()
 
 		// Find removed keys
 		for mapKey, _ := range leftVal {
@@ -188,3 +188,51 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 		return nil, errors.New(fmt.Sprintf("Bad type on left side: %T", leftStruct))
 	}
 }
+
+func newDiff(stanzas ...interface{}) []interface{} {
+	if stanzas == nil {
+		stanzas = []interface{}{}
+	}
+	return stanzas
+}
+
+func newEmptyDiff() []interface{} {
+	return newDiff()
+}
+
+func newAddStanza(newValue interface{}) interface{} {
+	return []interface{}{[]interface{}{}, newValue}
+}
+
+func newArrayAddStanza(index int, newValue interface{}) []interface{} {
+	return []interface{}{[]interface{}{index}, newValue}
+}
+
+func newObjectAddStanza(key string, newValue interface{}) []interface{} {
+	return []interface{}{[]interface{}{key}, newValue}
+}
+
+func newUpdateStanza(newValue interface{}) interface{} {
+	return newAddStanza(newValue)
+}
+
+func newArrayUpdateStanza(index int, newValue interface{}) []interface{} {
+	return newArrayAddStanza(index, newValue)
+}
+
+func newObjectUpdateStanza(key string, newValue interface{}) []interface{} {
+	return newObjectAddStanza(key, newValue)
+}
+
+func newRemoveStanza() interface{} {
+	return []interface{}{[]interface{}{}};
+}
+
+func newArrayRemoveStanza(index int) interface{} {
+	return []interface{}{[]interface{}{index}};
+}
+
+func newObjectRemoveStanza(key string) interface{} {
+	return []interface{}{[]interface{}{key}};
+}
+
