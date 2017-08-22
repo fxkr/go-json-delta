@@ -171,7 +171,7 @@ func prependKeyToStanza(mapKey string, subResult []interface{}) []interface{} {
 	subResultHead := subResult[0]
 	subResultKey, ok := subResultHead.([]interface{})
 	if !ok {
-		panic("Bug: unexpected subresult key %v of type %V in Diff between %v and %v")
+		panic(fmt.Sprintf("Bug: unexpected subresult key %v of type %V", subResultHead, subResultHead))
 	}
 
 	subResultTail := subResult[1:]
@@ -192,7 +192,7 @@ func prependIndexToStanza(i int, subResult []interface{}) []interface{} {
 	subResultHead := subResult[0]
 	subResultKey, ok := subResultHead.([]interface{})
 	if !ok {
-		panic("Bug: unexpected subresult key %v of type %V in Diff between %v and %v")
+		panic(fmt.Sprintf("Bug: unexpected subresult key %v of type %V", subResultHead, subResultHead))
 	}
 
 	subResultTail := subResult[1:]
