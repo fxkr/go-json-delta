@@ -54,13 +54,13 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 		// Update items
 		for i := 0; i < len(leftVal) || i < len(rightVal); i++ {
 
-			// For any extra items on the right, make 'remove' stanzas
+			// For any extra items on the left, make 'remove' stanzas
 			if i >= len(rightVal) {
 				results = append(results, []interface{}{[]interface{}{i}})
 				continue
 			}
 
-			// For any extra items on the left, make 'add' stanzas
+			// For any extra items on the right, make 'add' stanzas
 			rightListVal := rightVal[i]
 			if i >= len(leftVal) {
 				results = append(results, []interface{}{[]interface{}{i}, rightListVal})
