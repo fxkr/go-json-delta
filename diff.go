@@ -136,55 +136,28 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 }
 
 func appendWithPrefixIndex(results []interface{}, index int, subResults []interface{}) []interface{} {
-	for _, subResult := range subResults {
-		subResult, ok := subResult.([]interface{})
-		if !ok {
-			panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V", subResult, subResult))
-		}
-
-		newSubResult := prependIndexToStanza(index, subResult)
-
-		results = append(results, newSubResult)
-	}
-	return results
+	return appendWithPrefix(results, index, subResults);
 }
 
 func appendWithPrefixKey(results []interface{}, mapKey string, subResults []interface{}) []interface{} {
+	return appendWithPrefix(results, mapKey, subResults);
+}
+
+func appendWithPrefix(results []interface{}, prefix interface{}, subResults []interface{}) []interface{} {
 	for _, subResult := range subResults {
 		subResult, ok := subResult.([]interface{})
 		if !ok {
 			panic(fmt.Sprintf("Bug: unexpected subresult %v of type %V", subResult, subResult))
 		}
 
-		newSubResult := prependKeyToStanza(mapKey, subResult)
+		newSubResult := prependPrefixToStanza(prefix, subResult)
 
 		results = append(results, newSubResult)
 	}
 	return results
 }
 
-func prependKeyToStanza(mapKey string, subResult []interface{}) []interface{} {
-	if len(subResult) == 0 {
-		panic("Bug: unexpected empty subresult in Diff between %v and %v")
-	}
-
-	subResultHead := subResult[0]
-	subResultKey, ok := subResultHead.([]interface{})
-	if !ok {
-		panic(fmt.Sprintf("Bug: unexpected subresult key %v of type %V", subResultHead, subResultHead))
-	}
-
-	subResultTail := subResult[1:]
-
-	newSubResult := append(
-		[]interface{}{append([]interface{}{mapKey}, subResultKey...)},
-		subResultTail...,
-	)
-
-	return newSubResult
-}
-
-func prependIndexToStanza(i int, subResult []interface{}) []interface{} {
+func prependPrefixToStanza(prefix interface{}, subResult []interface{}) []interface{} {
 	if len(subResult) == 0 {
 		panic("Bug: unexpected empty subresult")
 	}
@@ -198,7 +171,7 @@ func prependIndexToStanza(i int, subResult []interface{}) []interface{} {
 	subResultTail := subResult[1:]
 
 	newSubResult := append(
-		[]interface{}{append([]interface{}{i}, subResultKey...)},
+		[]interface{}{append([]interface{}{prefix}, subResultKey...)},
 		subResultTail...,
 	)
 
