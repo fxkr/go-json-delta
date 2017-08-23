@@ -97,7 +97,7 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 		for mapKey, _ := range leftVal {
 			_, found := rightVal[mapKey]
 			if !found {
-				results = append(results, []interface{}{[]interface{}{mapKey}})
+				results = append(results, newObjectRemoveStanza(mapKey))
 				continue
 			}
 		}
@@ -106,7 +106,7 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 		for mapKey, rightMapVal := range rightVal {
 			_, found := leftVal[mapKey]
 			if !found {
-				results = append(results, []interface{}{[]interface{}{mapKey}, rightMapVal})
+				results = append(results, newObjectUpdateStanza(mapKey, rightMapVal))
 				continue
 			}
 		}
