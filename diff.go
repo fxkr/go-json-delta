@@ -232,4 +232,3 @@ func newArrayRemoveStanza(index int) interface{} {
 func newObjectRemoveStanza(key string) interface{} {
 	return []interface{}{[]interface{}{key}};
 }
-
