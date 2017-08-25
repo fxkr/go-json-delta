@@ -4,9 +4,23 @@ import (
 	"github.com/pkg/errors"
 
 	"fmt"
+	"encoding/json"
 )
 
 func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error) {
+
+	// Support custom types on left side
+	leftStruct, err := simplifyType(leftStruct)
+	if err != nil {
+		return nil, errors.Wrap(err,"Failed to prepare left value")
+	}
+
+	// Support custom types on right side
+	rightStruct, err = simplifyType(rightStruct)
+	if err != nil {
+		return nil, errors.Wrap(err,"Failed to prepare right value")
+	}
+
 	switch leftVal := leftStruct.(type) {
 
 	case bool:
@@ -61,6 +75,38 @@ func Diff(leftStruct interface{}, rightStruct interface{}) ([]interface{}, error
 
 	default:
 		return nil, errors.New(fmt.Sprintf("Bad type on left side: %T", leftStruct))
+	}
+}
+
+func simplifyType(value interface{}) (interface{}, error) {
+	switch value.(type) {
+	case bool:
+		return value, nil
+	case float64:
+		return value, nil
+	case int:
+		return value, nil
+	case nil:
+		return value, nil
+	case string:
+		return value, nil
+	case []interface{}:
+		return value, nil
+	case map[string]interface{}:
+		return value, nil
+	default:
+		valueJson, err := json.Marshal(value)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("Failed to marshal value %v of type %V", value, value))
+		}
+
+		var result interface{}
+		err = json.Unmarshal(valueJson, &result)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("Failed to unmarshal value %v of type %V again", value, value))
+		}
+
+		return result, nil
 	}
 }
 

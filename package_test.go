@@ -9,6 +9,7 @@ import (
 func Test(t *testing.T) {
 	_ = Suite(&DiffArraySuite{})
 	_ = Suite(&DiffBoolSuite{})
+	_ = Suite(&DiffCustomSuite{})
 	_ = Suite(&DiffFloatSuite{})
 	_ = Suite(&DiffIntSuite{})
 	_ = Suite(&DiffNullSuite{})
